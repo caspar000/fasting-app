@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getProtocol } from '@/src/core/constants/protocols';
@@ -7,6 +7,7 @@ import { getZoneForElapsed } from '@/src/core/constants/zones';
 import { formatDurationHoursMinutes, formatElapsed, formatTimeOfDay, relativeDayLabel } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
 import { ActionButton } from '@/src/features/home/components/action-button';
+import { AdjustStartModal } from '@/src/features/home/components/adjust-start-modal';
 import { DebugTimerSlider } from '@/src/features/home/components/debug-timer-slider';
 import { HOURS_PALETTE, ProgressRing } from '@/src/features/home/components/progress-ring';
 import { ActiveTimerContent, IdleTimerContent } from '@/src/features/home/components/timer-display';
@@ -31,6 +32,9 @@ export default function DashboardScreen() {
   const protocolId = useFastingStore((s) => s.protocolId);
   const startFast = useFastingStore((s) => s.startFast);
   const endFast = useFastingStore((s) => s.endFast);
+  const adjustStart = useFastingStore((s) => s.adjustStart);
+
+  const [adjustStartOpen, setAdjustStartOpen] = useState(false);
 
   const timerDebugSlider = useAppStore((s) => s.timerDebugSlider);
   const debugElapsedMs = useAppStore((s) => s.debugElapsedMs);
@@ -94,9 +98,7 @@ export default function DashboardScreen() {
                 startValue={formatTimeOfDay(startedDate)}
                 endLabel="Goal"
                 endValue={formatTimeOfDay(goalDate)}
-                onAdjustStart={() => {
-                  /* backdate modal to be wired */
-                }}
+                onAdjustStart={() => setAdjustStartOpen(true)}
               />
             ) : lastFast ? (
               <TimeInfo
@@ -119,6 +121,17 @@ export default function DashboardScreen() {
           </View>
         </View>
       </ScrollView>
+      {activeFast ? (
+        <AdjustStartModal
+          visible={adjustStartOpen}
+          startedAt={activeFast.startedAt}
+          onClose={() => setAdjustStartOpen(false)}
+          onConfirm={(newStartedAt) => {
+            adjustStart(newStartedAt);
+            setAdjustStartOpen(false);
+          }}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
