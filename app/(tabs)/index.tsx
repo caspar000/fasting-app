@@ -8,7 +8,7 @@ import { formatDurationHoursMinutes, formatElapsed, formatTimeOfDay, relativeDay
 import { colors } from '@/src/core/theme/colors';
 import { ActionButton } from '@/src/features/home/components/action-button';
 import { DebugTimerSlider } from '@/src/features/home/components/debug-timer-slider';
-import { ProgressRing, RING_STOPS } from '@/src/features/home/components/progress-ring';
+import { HOURS_PALETTE, ProgressRing } from '@/src/features/home/components/progress-ring';
 import { ActiveTimerContent, IdleTimerContent } from '@/src/features/home/components/timer-display';
 import { TimeInfo } from '@/src/features/home/components/time-info';
 import { ZoneBar } from '@/src/features/home/components/zone-bar';
@@ -42,7 +42,6 @@ export default function DashboardScreen() {
   const displayedElapsedMs = timerDebugSlider ? debugElapsedMs : realElapsedMs;
   const showActiveTimer = Boolean(activeFast) || timerDebugSlider;
   const elapsedHours = displayedElapsedMs / HOUR_MS;
-  const progress = displayedElapsedMs / (activeProtocol.fastHours * HOUR_MS);
   const currentZone = useMemo(() => getZoneForElapsed(elapsedHours), [elapsedHours]);
 
   const goalDate = activeFast
@@ -63,8 +62,9 @@ export default function DashboardScreen() {
           <ProgressRing
             size={RING_SIZE}
             strokeWidth={RING_STROKE}
-            progress={showActiveTimer ? progress : 0}
-            stops={RING_STOPS}
+            elapsedHours={showActiveTimer ? elapsedHours : 0}
+            protocolHours={activeProtocol.fastHours}
+            palette={HOURS_PALETTE}
             trackColor={theme.border}>
             {showActiveTimer ? (
               <ActiveTimerContent
