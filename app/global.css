@@ -4,29 +4,47 @@
 
 @layer base {
   :root {
-    --color-background: 255 255 255;
-    --color-foreground: 10 10 10;
-    --color-surface: 245 245 245;
-    --color-surface-elevated: 250 250 250;
-    --color-border: 229 229 229;
-    --color-muted: 245 245 245;
-    --color-muted-foreground: 115 115 115;
-    --color-accent: 0 0 0;
+    --color-background: 249 250 251;
+    --color-foreground: 17 24 39;
+    --color-text-secondary: 75 85 99;
+    --color-text-tertiary: 107 114 128;
+    --color-surface: 255 255 255;
+    --color-surface-elevated: 255 255 255;
+    --color-border: 229 231 235;
+    --color-divider: 243 244 246;
+    --color-accent: 37 99 235;
+    --color-accent-deep: 30 64 175;
+    --color-accent-bg: 239 246 255;
     --color-accent-foreground: 255 255 255;
-    --color-destructive: 220 38 38;
+    --color-segment-bg: 243 244 246;
+    --color-chevron: 209 213 219;
+    --color-destructive: 239 68 68;
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-zone-fed: 96 165 250;
+    --color-zone-fat-burn: 59 130 246;
+    --color-zone-ketosis: 99 102 241;
+    --color-zone-deep-ketosis: 139 92 246;
   }
 
   .dark:root,
   .dark {
-    --color-background: 10 10 10;
-    --color-foreground: 250 250 250;
-    --color-surface: 23 23 23;
-    --color-surface-elevated: 38 38 38;
-    --color-border: 64 64 64;
-    --color-muted: 38 38 38;
-    --color-muted-foreground: 163 163 163;
-    --color-accent: 250 250 250;
-    --color-accent-foreground: 10 10 10;
+    --color-background: 17 24 39;
+    --color-foreground: 249 250 251;
+    --color-text-secondary: 156 163 175;
+    --color-text-tertiary: 107 114 128;
+    --color-surface: 31 41 55;
+    --color-surface-elevated: 31 41 55;
+    --color-border: 75 85 99;
+    --color-divider: 55 65 81;
+    --color-accent: 37 99 235;
+    --color-accent-deep: 30 64 175;
+    --color-accent-bg: 30 58 95;
+    --color-accent-foreground: 255 255 255;
+    --color-segment-bg: 55 65 81;
+    --color-chevron: 75 85 99;
     --color-destructive: 239 68 68;
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
   }
 }

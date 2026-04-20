@@ -1,6 +1,11 @@
 import '@/app/global.css';
 
 import {
+  DMSans_500Medium,
+  DMSans_700Bold,
+  DMSans_800ExtraBold,
+} from '@expo-google-fonts/dm-sans';
+import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
@@ -37,6 +42,9 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    DMSans_500Medium,
+    DMSans_700Bold,
+    DMSans_800ExtraBold,
   });
 
   useEffect(() => {
@@ -60,6 +68,7 @@ export default function RootLayout() {
           <ThemeProvider value={colorSchemeResolved === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="protocols" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
             </Stack>
             <StatusBar style={colorSchemeResolved === 'dark' ? 'light' : 'dark'} />

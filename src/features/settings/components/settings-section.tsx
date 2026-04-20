@@ -14,14 +14,14 @@ export const SettingsSection = memo(function SettingsSection({
 }: SettingsSectionProps) {
   return (
     <View className="gap-3 px-4 py-4">
-      <Text className="pl-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <Text className="pl-1 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
         {title}
       </Text>
       <View className="overflow-hidden rounded-2xl border border-border bg-surface-elevated">
         {children}
       </View>
       {footer ? (
-        <Text className="px-2 text-center text-xs text-muted-foreground">{footer}</Text>
+        <Text className="px-2 text-center text-xs text-text-tertiary">{footer}</Text>
       ) : null}
     </View>
   );

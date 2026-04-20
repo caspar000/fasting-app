@@ -29,7 +29,7 @@ export const SettingsRow = memo(function SettingsRow({
 }: SettingsRowProps) {
   const scheme = useColorScheme();
   const iconColor = destructive ? colors[scheme].destructive : colors[scheme].foreground;
-  const mutedColor = colors[scheme]['muted-foreground'];
+  const mutedColor = colors[scheme]['text-tertiary'];
 
   return (
     <Pressable
@@ -54,7 +54,7 @@ export const SettingsRow = memo(function SettingsRow({
       <View className="ml-2 flex-row items-center gap-1.5">
         {rightElement}
         {value ? (
-          <Text numberOfLines={1} className="text-sm text-muted-foreground">
+          <Text numberOfLines={1} className="text-sm text-text-tertiary">
             {value}
           </Text>
         ) : null}
