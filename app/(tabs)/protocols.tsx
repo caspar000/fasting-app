@@ -1,6 +1,5 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getProtocol,
@@ -28,23 +27,13 @@ export default function ProtocolsScreen() {
 
   const selectProtocol = (p: Protocol) => {
     setProtocol(p.id);
-    router.back();
+    router.navigate('/');
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
-      <View className="flex-row items-center px-4 pb-2 pt-1">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          onPress={() => router.back()}
-          hitSlop={12}
-          className="h-8 w-8 items-center justify-center">
-          <Ionicons name="chevron-back" size={22} color={theme.foreground} />
-        </Pressable>
-        <View className="flex-1 items-center pr-8">
-          <Text className="font-bold text-[20px] text-foreground">Fasting Protocols</Text>
-        </View>
+      <View className="items-center pb-2 pt-1">
+        <Text className="font-bold text-[20px] text-foreground">Fasting Protocols</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 20 }}>
@@ -97,10 +86,7 @@ export default function ProtocolsScreen() {
               accent
               leadingIcon="add"
               onPress={() =>
-                Alert.alert(
-                  'Coming soon',
-                  'Custom protocols are not yet implemented.',
-                )
+                Alert.alert('Coming soon', 'Custom protocols are not yet implemented.')
               }
             />
           </ListCard>

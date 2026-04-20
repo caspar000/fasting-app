@@ -68,7 +68,6 @@ export default function RootLayout() {
           <ThemeProvider value={colorSchemeResolved === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="protocols" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
             </Stack>
             <StatusBar style={colorSchemeResolved === 'dark' ? 'light' : 'dark'} />

@@ -80,7 +80,7 @@ export default function DashboardScreen() {
             ) : (
               <IdleTimerContent
                 protocolLabel={activeProtocol.label}
-                onChangeProtocol={() => router.push('/protocols')}
+                onChangeProtocol={() => router.navigate('/protocols')}
               />
             )}
           </ProgressRing>
