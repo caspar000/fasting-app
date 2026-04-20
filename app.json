@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "Template App",
-    "slug": "template-app",
+    "name": "Fasting App",
+    "slug": "fasting-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "templateapp",
+    "scheme": "fastingapp",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "net.darkroomlab.templateapp",
+      "bundleIdentifier": "net.darkroomlab.fastingapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "net.darkroomlab.templateapp",
+      "package": "net.darkroomlab.fastingapp",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

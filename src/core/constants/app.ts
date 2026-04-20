@@ -1,3 +1,3 @@
-export const APP_NAME = 'Template App';
-export const DATABASE_NAME = 'template.db';
-export const STORE_NAME = 'template-app-settings';
+export const APP_NAME = 'Fasting App';
+export const DATABASE_NAME = 'fasting.db';
+export const STORE_NAME = 'fasting-app-settings';

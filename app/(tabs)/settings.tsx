@@ -46,7 +46,7 @@ export default function SettingsScreen() {
           </View>
         </SettingsSection>
 
-        <SettingsSection title="About" footer="Template App v1.0.0">
+        <SettingsSection title="About" footer="Fasting App v1.0.0">
           <SettingsRow label="Version" value="1.0.0" showChevron={false} divider={false} />
         </SettingsSection>
       </ScrollView>

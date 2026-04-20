@@ -1,6 +1,4 @@
-# Template App
-
-Reusable Expo skeleton. Clone, rename, build.
+# Fasting App
 
 ## Stack
 
