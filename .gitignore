@@ -32,11 +32,6 @@ android/
 
 expo-env.d.ts
 
-# Claude Code / local tooling artifacts
-.claude/
-.agents/
-skills-lock.json
-
 # Per-app design artifacts (replace in each downstream app)
 *.pen
 design/
