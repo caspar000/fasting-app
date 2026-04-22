@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -104,6 +105,12 @@ export default function SettingsScreen() {
                 />
               }
               showChevron={false}
+            />
+            <SettingsRow
+              label="Manage fasts"
+              icon="list-outline"
+              onPress={() => router.navigate('/dev-fasts')}
+              divider
             />
             <SettingsRow
               label="Disable developer mode"
