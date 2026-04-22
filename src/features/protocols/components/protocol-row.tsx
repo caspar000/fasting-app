@@ -54,7 +54,7 @@ export function ProtocolRow({
           <Text
             className="font-semibold text-[11px]"
             style={{ color: theme['accent-deep'] }}>
-            Default
+            Selected
           </Text>
         </View>
       ) : (

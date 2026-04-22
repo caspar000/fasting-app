@@ -74,7 +74,6 @@ export default function ProtocolsScreen() {
                   title={p.shortLabel}
                   subtitle={p.description}
                   selected={p.id === protocolId}
-                  accent={p.id === 'adf'}
                   onPress={() => selectProtocol(p)}
                 />
               </View>

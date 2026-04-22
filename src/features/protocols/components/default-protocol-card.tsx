@@ -12,7 +12,7 @@ export function DefaultProtocolCard({ protocol, onPress }: DefaultProtocolCardPr
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Default protocol: ${protocol.label}`}
+      accessibilityLabel={`Selected protocol: ${protocol.label}`}
       onPress={onPress}
       style={({ pressed }) => ({ opacity: pressed ? 0.92 : 1 })}>
       <View
@@ -37,7 +37,7 @@ export function DefaultProtocolCard({ protocol, onPress }: DefaultProtocolCardPr
           }}>
           <View style={{ gap: 4 }}>
             <Text className="font-medium text-[12px]" style={{ color: '#FFFFFFCC' }}>
-              Default Protocol
+              Selected Protocol
             </Text>
             <Text className="font-bold text-[18px] text-white">{protocol.label}</Text>
           </View>
