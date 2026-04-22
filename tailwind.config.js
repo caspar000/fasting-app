@@ -19,6 +19,7 @@ module.exports = {
         'accent-bg': 'rgb(var(--color-accent-bg) / <alpha-value>)',
         'accent-foreground': 'rgb(var(--color-accent-foreground) / <alpha-value>)',
         'segment-bg': 'rgb(var(--color-segment-bg) / <alpha-value>)',
+        'chart-bar-light': 'rgb(var(--color-chart-bar-light) / <alpha-value>)',
         chevron: 'rgb(var(--color-chevron) / <alpha-value>)',
         destructive: 'rgb(var(--color-destructive) / <alpha-value>)',
         success: 'rgb(var(--color-success) / <alpha-value>)',
