@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { colors } from '@/src/core/theme/colors';

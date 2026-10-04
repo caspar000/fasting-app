@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Text, View } from 'react-native';
 
 export function StreakPill({ days }: { days: number }) {

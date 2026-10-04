@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Pressable, Text, View } from 'react-native';
 import { getProtocol } from '@/src/core/constants/protocols';
 import { formatDurationHoursMinutes, formatTimeOfDay } from '@/src/core/lib/time';
