@@ -22,6 +22,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { colors } from '@/src/core/theme/colors';
+import { useGoalNotification } from '@/src/features/notifications/hooks/use-goal-notification';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
 import { useAppStore } from '@/src/stores/app-store';
 
@@ -47,6 +48,8 @@ export default function RootLayout() {
   useEffect(() => {
     nwColorScheme.set(theme);
   }, [theme]);
+
+  useGoalNotification();
 
   if (!fontsLoaded) {
     return null;
