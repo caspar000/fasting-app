@@ -26,6 +26,8 @@ export default function DevFastsScreen() {
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<CompletedFast | null>(null);
+  // Bumped on every open so the editor remounts and re-reads its initial values.
+  const [editorKey, setEditorKey] = useState(0);
 
   useEffect(() => {
     if (!developerMode) router.back();
@@ -38,11 +40,13 @@ export default function DevFastsScreen() {
 
   const openAdd = () => {
     setEditing(null);
+    setEditorKey((k) => k + 1);
     setEditorOpen(true);
   };
 
   const openEdit = (fast: CompletedFast) => {
     setEditing(fast);
+    setEditorKey((k) => k + 1);
     setEditorOpen(true);
   };
 
@@ -151,6 +155,7 @@ export default function DevFastsScreen() {
         </ScrollView>
 
         <FastEditorModal
+          key={editorKey}
           visible={editorOpen}
           fast={editing}
           defaultProtocolId={protocolId}

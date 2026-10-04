@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, Text, View } from 'react-native';
 import { formatTimeOfDay } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
@@ -28,13 +28,15 @@ export function AdjustStartModal({
   const [pickedHour, setPickedHour] = useState(() => new Date(startedAt).getHours());
   const [pickedMinute, setPickedMinute] = useState(() => new Date(startedAt).getMinutes());
 
-  useEffect(() => {
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
     if (visible) {
       const d = new Date(startedAt);
       setPickedHour(d.getHours());
       setPickedMinute(d.getMinutes());
     }
-  }, [visible, startedAt]);
+  }
 
   const newStartedAt = useMemo(
     () => resolvePastTimestamp(pickedHour, pickedMinute),

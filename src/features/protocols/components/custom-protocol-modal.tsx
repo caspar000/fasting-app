@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 import { colors } from '@/src/core/theme/colors';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
@@ -31,9 +31,11 @@ export function CustomProtocolModal({
 
   const [hours, setHours] = useState(() => clampHours(initialFastHours));
 
-  useEffect(() => {
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
     if (visible) setHours(clampHours(initialFastHours));
-  }, [visible, initialFastHours]);
+  }
 
   const summary = useMemo(() => {
     if (hours < 24) return `${hours}h fast · ${24 - hours}h eat · 24h cycle`;

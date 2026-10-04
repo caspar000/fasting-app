@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { PROTOCOLS } from '@/src/core/constants/protocols';
 import { formatDurationHoursMinutes } from '@/src/core/lib/time';
@@ -35,20 +35,6 @@ export function FastEditorModal({
   const [startedAt, setStartedAt] = useState<number>(() => fast?.startedAt ?? Date.now() - 16 * HOUR_MS);
   const [endedAt, setEndedAt] = useState<number>(() => fast?.endedAt ?? Date.now());
   const [protocolId, setProtocolId] = useState<string>(() => fast?.protocolId ?? defaultProtocolId);
-
-  useEffect(() => {
-    if (!visible) return;
-    if (fast) {
-      setStartedAt(fast.startedAt);
-      setEndedAt(fast.endedAt);
-      setProtocolId(fast.protocolId);
-    } else {
-      const now = Date.now();
-      setEndedAt(now);
-      setStartedAt(now - 16 * HOUR_MS);
-      setProtocolId(defaultProtocolId);
-    }
-  }, [visible, fast, defaultProtocolId]);
 
   const durationMs = Math.max(0, endedAt - startedAt);
   const durationLabel = formatDurationHoursMinutes(durationMs);

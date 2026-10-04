@@ -5,7 +5,6 @@ export function useElapsed(startedAt: number | null, intervalMs = 1000): number 
 
   useEffect(() => {
     if (startedAt === null) return;
-    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), intervalMs);
     return () => clearInterval(id);
   }, [startedAt, intervalMs]);
