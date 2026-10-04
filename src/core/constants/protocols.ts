@@ -104,8 +104,29 @@ export const PROTOCOLS: readonly Protocol[] = [
 ] as const;
 
 export const DEFAULT_PROTOCOL_ID: Protocol['id'] = '16-8';
+export const CUSTOM_PROTOCOL_ID = 'custom';
 
-export function getProtocol(id: string): Protocol {
+export function buildCustomProtocol(fastHours: number): Protocol {
+  const isDaily = fastHours < 24;
+  const eatHours = isDaily ? 24 - fastHours : 0;
+  const description = isDaily
+    ? `${fastHours}h fast · ${eatHours}h eat · Your custom setup`
+    : `${fastHours}h fast · Your custom setup`;
+  return {
+    id: CUSTOM_PROTOCOL_ID,
+    label: 'Custom Protocol',
+    shortLabel: 'Custom Protocol',
+    fastHours,
+    eatHours,
+    description,
+    category: 'extended',
+  };
+}
+
+export function getProtocol(id: string, customFastHours: number | null = null): Protocol {
+  if (id === CUSTOM_PROTOCOL_ID && customFastHours != null) {
+    return buildCustomProtocol(customFastHours);
+  }
   return PROTOCOLS.find((p) => p.id === id) ?? PROTOCOLS.find((p) => p.id === DEFAULT_PROTOCOL_ID)!;
 }
 

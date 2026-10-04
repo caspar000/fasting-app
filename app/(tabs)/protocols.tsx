@@ -1,12 +1,16 @@
 import { router } from 'expo-router';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  buildCustomProtocol,
+  CUSTOM_PROTOCOL_ID,
   getProtocol,
   getProtocolsByCategory,
   type Protocol,
 } from '@/src/core/constants/protocols';
 import { colors } from '@/src/core/theme/colors';
+import { CustomProtocolModal } from '@/src/features/protocols/components/custom-protocol-modal';
 import { DefaultProtocolCard } from '@/src/features/protocols/components/default-protocol-card';
 import {
   ProtocolRow,
@@ -15,18 +19,36 @@ import {
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
 import { useFastingStore } from '@/src/stores/fasting-store';
 
+const DEFAULT_NEW_CUSTOM_HOURS = 16;
+
 export default function ProtocolsScreen() {
   const scheme = useColorScheme();
   const theme = colors[scheme];
   const protocolId = useFastingStore((s) => s.protocolId);
   const setProtocol = useFastingStore((s) => s.setProtocol);
+  const customFastHours = useFastingStore((s) => s.customProtocolFastHours);
+  const setCustomProtocol = useFastingStore((s) => s.setCustomProtocol);
 
-  const defaultProtocol = getProtocol(protocolId);
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+
+  const defaultProtocol = getProtocol(protocolId, customFastHours);
   const standardProtocols = getProtocolsByCategory('standard');
   const extendedProtocols = getProtocolsByCategory('extended');
+  const customProtocol =
+    customFastHours != null ? buildCustomProtocol(customFastHours) : null;
 
   const selectProtocol = (p: Protocol) => {
     setProtocol(p.id);
+    router.navigate('/');
+  };
+
+  const openCustomModal = () => setCustomModalOpen(true);
+  const closeCustomModal = () => setCustomModalOpen(false);
+
+  const saveCustomProtocol = (fastHours: number) => {
+    setCustomProtocol(fastHours);
+    setProtocol(CUSTOM_PROTOCOL_ID);
+    setCustomModalOpen(false);
     router.navigate('/');
   };
 
@@ -37,7 +59,12 @@ export default function ProtocolsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 20 }}>
-        <DefaultProtocolCard protocol={defaultProtocol} />
+        <DefaultProtocolCard
+          protocol={defaultProtocol}
+          onPress={
+            protocolId === CUSTOM_PROTOCOL_ID && customProtocol ? openCustomModal : undefined
+          }
+        />
 
         <View style={{ gap: 8 }}>
           <Text
@@ -79,18 +106,32 @@ export default function ProtocolsScreen() {
               </View>
             ))}
             <ProtocolRowDivider />
-            <ProtocolRow
-              title="Custom Protocol"
-              subtitle="Create your own fasting window"
-              accent
-              leadingIcon="add"
-              onPress={() =>
-                Alert.alert('Coming soon', 'Custom protocols are not yet implemented.')
-              }
-            />
+            {customProtocol ? (
+              <ProtocolRow
+                title={customProtocol.shortLabel}
+                subtitle={customProtocol.description}
+                selected={protocolId === CUSTOM_PROTOCOL_ID}
+                onPress={openCustomModal}
+              />
+            ) : (
+              <ProtocolRow
+                title="Custom Protocol"
+                subtitle="Create your own fasting window"
+                accent
+                leadingIcon="add"
+                onPress={openCustomModal}
+              />
+            )}
           </ListCard>
         </View>
       </ScrollView>
+
+      <CustomProtocolModal
+        visible={customModalOpen}
+        initialFastHours={customFastHours ?? DEFAULT_NEW_CUSTOM_HOURS}
+        onClose={closeCustomModal}
+        onSave={saveCustomProtocol}
+      />
     </SafeAreaView>
   );
 }

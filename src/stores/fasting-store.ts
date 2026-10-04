@@ -25,6 +25,7 @@ interface FastingState {
   lastFast: CompletedFast | null;
   completedFasts: CompletedFast[];
   streakCount: number;
+  customProtocolFastHours: number | null;
   setProtocol: (id: string) => void;
   startFast: (startedAt?: number) => void;
   endFast: (endedAt?: number) => void;
@@ -32,6 +33,7 @@ interface FastingState {
   deleteFast: (id: string) => void;
   addCompletedFast: (fast: Omit<CompletedFast, 'id'> & { id?: string }) => void;
   updateCompletedFast: (id: string, updated: Omit<CompletedFast, 'id'>) => void;
+  setCustomProtocol: (fastHours: number) => void;
 }
 
 function sortByEndedDesc(fasts: CompletedFast[]): CompletedFast[] {
@@ -52,6 +54,7 @@ export const useFastingStore = create<FastingState>()(
       lastFast: null,
       completedFasts: [],
       streakCount: 0,
+      customProtocolFastHours: null,
       setProtocol: (id) => {
         set({ protocolId: id });
         const active = get().activeFast;
@@ -106,11 +109,14 @@ export const useFastingStore = create<FastingState>()(
           return { completedFasts, lastFast };
         });
       },
+      setCustomProtocol: (fastHours) => {
+        set({ customProtocolFastHours: fastHours });
+      },
     }),
     {
       name: 'fasting-app-fast-state',
       storage: secureStorage,
-      version: 2,
+      version: 3,
       migrate: (persisted, version) => {
         const state = persisted as Partial<FastingState> & {
           completedFasts?: (Partial<CompletedFast> & Omit<CompletedFast, 'id'>)[];
@@ -130,6 +136,9 @@ export const useFastingStore = create<FastingState>()(
               id: state.lastFast.id ?? makeFastId(),
             } as CompletedFast;
           }
+        }
+        if (version < 3) {
+          state.customProtocolFastHours = state.customProtocolFastHours ?? null;
         }
         return state as FastingState;
       },

@@ -40,7 +40,8 @@ export default function DashboardScreen() {
   const debugElapsedMs = useAppStore((s) => s.debugElapsedMs);
   const setDebugElapsedMs = useAppStore((s) => s.setDebugElapsedMs);
 
-  const activeProtocol = getProtocol(activeFast?.protocolId ?? protocolId);
+  const customFastHours = useFastingStore((s) => s.customProtocolFastHours);
+  const activeProtocol = getProtocol(activeFast?.protocolId ?? protocolId, customFastHours);
   const realElapsedMs = useElapsed(activeFast?.startedAt ?? null);
 
   const displayedElapsedMs = timerDebugSlider ? debugElapsedMs : realElapsedMs;

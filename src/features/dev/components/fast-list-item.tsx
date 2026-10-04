@@ -4,7 +4,7 @@ import { getProtocol } from '@/src/core/constants/protocols';
 import { formatDurationHoursMinutes, formatTimeOfDay } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
-import type { CompletedFast } from '@/src/stores/fasting-store';
+import { type CompletedFast, useFastingStore } from '@/src/stores/fasting-store';
 
 interface FastListItemProps {
   fast: CompletedFast;
@@ -16,9 +16,10 @@ export function FastListItem({ fast, onPress, onDelete }: FastListItemProps) {
   const scheme = useColorScheme();
   const theme = colors[scheme];
 
+  const customFastHours = useFastingStore((s) => s.customProtocolFastHours);
   const start = new Date(fast.startedAt);
   const end = new Date(fast.endedAt);
-  const protocol = getProtocol(fast.protocolId);
+  const protocol = getProtocol(fast.protocolId, customFastHours);
   const durationMs = Math.max(0, fast.endedAt - fast.startedAt);
   const startDate = start.toLocaleDateString(undefined, {
     weekday: 'short',
