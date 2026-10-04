@@ -6,7 +6,7 @@ Goal: run the app on my own iPhone through TestFlight. Accounts, payments and Ap
 
 Two options, neither needs Xcode:
 
-- **Expo Go (free, available now).** Install Expo Go from the App Store, log in with the same Expo account as the CLI (`pnpm exec expo login`), run `pnpm start` on the Mac and scan the QR code. Only Metro runs locally. Every native module the app uses (Skia, datetimepicker, picker, slider, secure-store, sqlite, linear-gradient, reanimated) ships inside Expo Go for SDK 57. Use this to check steps 1–4 as they land.
+- **Expo Go (free, available now).** Install Expo Go from the App Store, log in with the same Expo account as the CLI (`pnpm exec expo login`), run `pnpm start` on the Mac and scan the QR code. Only Metro runs locally. Every native module the app uses (Skia, datetimepicker, picker, slider, sqlite, notifications, linear-gradient, reanimated) ships inside Expo Go for SDK 57. Use this to check steps 1–4 as they land.
 - **EAS cloud build + TestFlight (step 5).** Expo's servers build and upload the app, so the Mac only runs `eas` commands. After adding `expo-updates`, JS-only changes reach the installed build with `eas update`, no rebuild needed.
 
 ## 1. Move persisted state out of SecureStore — done (`041c35a`)
@@ -24,7 +24,7 @@ Nothing tells you when a fast reaches its goal.
 - Add `expo-notifications` and ask for permission on the first fast start.
 - Schedule a local notification at `startedAt + fastHours` on `startFast`.
 - Reschedule on `adjustStart` and `setProtocol`/`setCustomProtocol` while a fast is active, and cancel on `endFast`.
-- Keep the scheduled notification id in the fasting store.
+- The app schedules no other notifications, so a sync cancels all scheduled ones instead of storing an id.
 
 ## 3. Streak pill fix — done (`0aca68e`)
 
