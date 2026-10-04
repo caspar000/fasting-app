@@ -4,3 +4,8 @@ allowBuilds:
   '@shopify/react-native-skia': true
   esbuild: true
   unrs-resolver: false
+
+overrides:
+  # Optional peer of react-native's CLI plugin; pnpm would otherwise
+  # auto-install the newest version instead of the one matching react-native.
+  '@react-native/metro-config': 0.86.3
