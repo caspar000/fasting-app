@@ -1,7 +1,7 @@
-import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 import { DEFAULT_PROTOCOL_ID } from '@/src/core/constants/protocols';
+import { persistStorage } from './storage';
 
 export interface ActiveFast {
   startedAt: number;
@@ -39,12 +39,6 @@ interface FastingState {
 function sortByEndedDesc(fasts: CompletedFast[]): CompletedFast[] {
   return [...fasts].sort((a, b) => b.endedAt - a.endedAt);
 }
-
-const secureStorage = createJSONStorage(() => ({
-  getItem: (name: string) => SecureStore.getItemAsync(name),
-  setItem: (name: string, value: string) => SecureStore.setItemAsync(name, value),
-  removeItem: (name: string) => SecureStore.deleteItemAsync(name),
-}));
 
 export const useFastingStore = create<FastingState>()(
   persist(
@@ -115,7 +109,7 @@ export const useFastingStore = create<FastingState>()(
     }),
     {
       name: 'fasting-app-fast-state',
-      storage: secureStorage,
+      storage: persistStorage,
       version: 3,
       migrate: (persisted, version) => {
         const state = persisted as Partial<FastingState> & {

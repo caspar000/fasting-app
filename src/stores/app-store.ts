@@ -1,15 +1,9 @@
-import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 import { STORE_NAME } from '@/src/core/constants/app';
+import { persistStorage } from './storage';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
-
-const secureStorage = createJSONStorage(() => ({
-  getItem: (name: string) => SecureStore.getItemAsync(name),
-  setItem: (name: string, value: string) => SecureStore.setItemAsync(name, value),
-  removeItem: (name: string) => SecureStore.deleteItemAsync(name),
-}));
 
 interface AppState {
   theme: ThemeMode;
@@ -17,7 +11,6 @@ interface AppState {
   developerMode: boolean;
   timerDebugSlider: boolean;
   debugElapsedMs: number;
-  _hasHydrated: boolean;
   setTheme: (theme: ThemeMode) => void;
   setOnboardingComplete: (value: boolean) => void;
   setDeveloperMode: (value: boolean) => void;
@@ -33,7 +26,6 @@ export const useAppStore = create<AppState>()(
       developerMode: false,
       timerDebugSlider: false,
       debugElapsedMs: 0,
-      _hasHydrated: false,
       setTheme: (theme) => set({ theme }),
       setOnboardingComplete: (value) => set({ hasCompletedOnboarding: value }),
       setDeveloperMode: (value) =>
@@ -43,14 +35,11 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: STORE_NAME,
-      storage: secureStorage,
+      storage: persistStorage,
       partialize: (state) => {
-        const { _hasHydrated, debugElapsedMs, ...rest } = state;
+        const { debugElapsedMs, ...rest } = state;
         void debugElapsedMs;
         return rest;
-      },
-      onRehydrateStorage: () => () => {
-        useAppStore.setState({ _hasHydrated: true });
       },
     },
   ),

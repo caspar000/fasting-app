@@ -23,8 +23,6 @@ import 'react-native-reanimated';
 
 import { colors } from '@/src/core/theme/colors';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
-import { DatabaseProvider } from '@/src/providers/database-provider';
-import { QueryProvider } from '@/src/providers/query-provider';
 import { useAppStore } from '@/src/stores/app-store';
 
 SplashScreen.preventAutoHideAsync();
@@ -36,7 +34,6 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorSchemeResolved = useColorScheme();
   const theme = useAppStore((s) => s.theme);
-  const hasHydrated = useAppStore((s) => s._hasHydrated);
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -51,30 +48,24 @@ export default function RootLayout() {
     nwColorScheme.set(theme);
   }, [theme]);
 
-  if (fontsLoaded && hasHydrated) {
-    SplashScreen.hideAsync();
-  }
-
-  if (!fontsLoaded || !hasHydrated) {
+  if (!fontsLoaded) {
     return null;
   }
+
+  SplashScreen.hideAsync();
 
   const bg = colors[colorSchemeResolved].background;
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: bg }}>
-      <QueryProvider>
-        <DatabaseProvider>
-          <ThemeProvider value={colorSchemeResolved === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="dev-fasts" options={{ title: 'Manage fasts' }} />
-              <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
-            </Stack>
-            <StatusBar style={colorSchemeResolved === 'dark' ? 'light' : 'dark'} />
-          </ThemeProvider>
-        </DatabaseProvider>
-      </QueryProvider>
+      <ThemeProvider value={colorSchemeResolved === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="dev-fasts" options={{ title: 'Manage fasts' }} />
+          <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
+        </Stack>
+        <StatusBar style={colorSchemeResolved === 'dark' ? 'light' : 'dark'} />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
