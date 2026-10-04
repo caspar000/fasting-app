@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
@@ -11,6 +12,8 @@ const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
 ];
+
+const APP_VERSION = Constants.expoConfig?.version ?? '';
 
 const UNLOCK_TAPS = 10;
 const TAP_RESET_MS = 2000;
@@ -80,10 +83,10 @@ export default function SettingsScreen() {
           </View>
         </SettingsSection>
 
-        <SettingsSection title="About" footer={unlockHint ?? 'Fasting App v1.0.0'}>
+        <SettingsSection title="About" footer={unlockHint ?? `Fasting App v${APP_VERSION}`}>
           <SettingsRow
             label="Version"
-            value="1.0.0"
+            value={APP_VERSION}
             onPress={handleVersionTap}
             showChevron={false}
             divider={false}
