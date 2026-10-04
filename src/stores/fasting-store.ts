@@ -24,7 +24,6 @@ interface FastingState {
   activeFast: ActiveFast | null;
   lastFast: CompletedFast | null;
   completedFasts: CompletedFast[];
-  streakCount: number;
   customProtocolFastHours: number | null;
   setProtocol: (id: string) => void;
   startFast: (startedAt?: number) => void;
@@ -47,7 +46,6 @@ export const useFastingStore = create<FastingState>()(
       activeFast: null,
       lastFast: null,
       completedFasts: [],
-      streakCount: 0,
       customProtocolFastHours: null,
       setProtocol: (id) => {
         set({ protocolId: id });
@@ -71,7 +69,6 @@ export const useFastingStore = create<FastingState>()(
           activeFast: null,
           lastFast: completed,
           completedFasts: [completed, ...s.completedFasts],
-          streakCount: s.streakCount + 1,
         }));
       },
       adjustStart: (startedAt) => {
@@ -110,7 +107,7 @@ export const useFastingStore = create<FastingState>()(
     {
       name: 'fasting-app-fast-state',
       storage: persistStorage,
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const state = persisted as Partial<FastingState> & {
           completedFasts?: (Partial<CompletedFast> & Omit<CompletedFast, 'id'>)[];
@@ -133,6 +130,9 @@ export const useFastingStore = create<FastingState>()(
         }
         if (version < 3) {
           state.customProtocolFastHours = state.customProtocolFastHours ?? null;
+        }
+        if (version < 4) {
+          delete (state as { streakCount?: number }).streakCount;
         }
         return state as FastingState;
       },

@@ -4,6 +4,7 @@ import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getProtocol } from '@/src/core/constants/protocols';
 import { getZoneForElapsed } from '@/src/core/constants/zones';
+import { computeStreaks } from '@/src/core/lib/streaks';
 import { formatDurationHoursMinutes, formatElapsed, formatTimeOfDay, relativeDayLabel } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
 import { ActionButton } from '@/src/features/home/components/action-button';
@@ -28,13 +29,17 @@ export default function DashboardScreen() {
 
   const activeFast = useFastingStore((s) => s.activeFast);
   const lastFast = useFastingStore((s) => s.lastFast);
-  const streakCount = useFastingStore((s) => s.streakCount);
+  const completedFasts = useFastingStore((s) => s.completedFasts);
   const protocolId = useFastingStore((s) => s.protocolId);
   const startFast = useFastingStore((s) => s.startFast);
   const endFast = useFastingStore((s) => s.endFast);
   const adjustStart = useFastingStore((s) => s.adjustStart);
 
   const [adjustStartOpen, setAdjustStartOpen] = useState(false);
+  const streak = useMemo(
+    () => computeStreaks(completedFasts, new Date()).current,
+    [completedFasts],
+  );
 
   const timerDebugSlider = useAppStore((s) => s.timerDebugSlider);
   const debugElapsedMs = useAppStore((s) => s.debugElapsedMs);
@@ -76,7 +81,7 @@ export default function DashboardScreen() {
                 elapsedText={formatElapsed(displayedElapsedMs)}
                 protocol={activeProtocol}
                 zone={currentZone}
-                streak={streakCount}
+                streak={streak}
               />
             ) : (
               <IdleTimerContent
