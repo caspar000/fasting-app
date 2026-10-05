@@ -40,16 +40,15 @@ The Timer tab's streak pill shows `streakCount`, which goes up by one on every `
 - Read the version in Settings from `expo-constants` instead of the hardcoded `1.0.0`.
 - Try the custom protocol modal (recovered from the backup, never run).
 
-## 5. TestFlight
+## 5. TestFlight — done
 
-1. Join the Apple Developer Program ($99/year) if not already a member.
-2. Replace the old global `eas-cli` (18.1.0, installed with npm): `npm rm -g eas-cli && brew install eas-cli`.
-3. `eas login`, then `eas init`. This adds `extra.eas.projectId` and `owner` to `app.json`.
-4. Optional: `eas update:configure` to add `expo-updates`, so later JS changes can skip a rebuild.
-5. `eas build -p ios --profile production --auto-submit`. The first run sets up signing and creates the App Store Connect record for `net.darkroomlab.fastingapp`.
-6. In App Store Connect, add yourself to an internal testing group and install from the TestFlight app. Internal testers skip Beta App Review.
+First build (1.0.0, build 2, commit `f7c09f4`) is on TestFlight. EAS holds the signing credentials, and `eas.json` has the App Store Connect app ID, so later builds need no Apple prompts.
 
-Already in place: `ITSAppUsesNonExemptEncryption: false`, remote build numbers with `autoIncrement`, EAS pinned to Node 24.21.0 and pnpm 12.9.1.
+## Shipping changes
+
+- **JS-only changes** (screens, logic, styles): `eas update --channel production --message "..."`. The TestFlight build downloads the update on launch and applies it on the next launch.
+- **Native changes** (adding or upgrading a package with native code, `app.json` changes such as the icon or plugins, or a new `version`): `eas build -p ios --profile production --auto-submit`. The build number goes up automatically.
+- Updates only reach builds with the same runtime version. The runtime follows `version` in `app.json`, so bumping it requires a new build.
 
 ## Later, only if publishing
 
