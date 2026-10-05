@@ -12,6 +12,9 @@
       "bundleIdentifier": "net.darkroomlab.fastingapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -53,7 +56,14 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "674bb658-85cb-4733-a953-3996eb01e40b"
+      }
+    },
+    "owner": "justvasili",
+    "updates": {
+      "url": "https://u.expo.dev/674bb658-85cb-4733-a953-3996eb01e40b"
     }
   }
 }
