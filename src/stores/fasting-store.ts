@@ -6,6 +6,7 @@ import { persistStorage } from './storage';
 export interface ActiveFast {
   startedAt: number;
   protocolId: string;
+  goalCelebrated?: boolean;
 }
 
 export interface CompletedFast {
@@ -29,6 +30,7 @@ interface FastingState {
   startFast: (startedAt?: number) => void;
   endFast: (endedAt?: number) => void;
   adjustStart: (startedAt: number) => void;
+  markGoalCelebrated: () => void;
   deleteFast: (id: string) => void;
   addCompletedFast: (fast: Omit<CompletedFast, 'id'> & { id?: string }) => void;
   updateCompletedFast: (id: string, updated: Omit<CompletedFast, 'id'>) => void;
@@ -75,6 +77,11 @@ export const useFastingStore = create<FastingState>()(
         const active = get().activeFast;
         if (!active) return;
         set({ activeFast: { ...active, startedAt } });
+      },
+      markGoalCelebrated: () => {
+        const active = get().activeFast;
+        if (!active) return;
+        set({ activeFast: { ...active, goalCelebrated: true } });
       },
       deleteFast: (id) => {
         set((s) => {

@@ -10,6 +10,7 @@ import { colors } from '@/src/core/theme/colors';
 import { ActionButton } from '@/src/features/home/components/action-button';
 import { AdjustStartModal } from '@/src/features/home/components/adjust-start-modal';
 import { DebugTimerSlider } from '@/src/features/home/components/debug-timer-slider';
+import { GoalConfetti } from '@/src/features/home/components/goal-confetti';
 import { ProgressRing } from '@/src/features/home/components/progress-ring';
 import { ActiveTimerContent, IdleTimerContent } from '@/src/features/home/components/timer-display';
 import { TimeInfo } from '@/src/features/home/components/time-info';
@@ -138,6 +139,11 @@ export default function DashboardScreen() {
           }}
         />
       ) : null}
+      <GoalConfetti
+        elapsedMs={displayedElapsedMs}
+        goalMs={activeProtocol.fastHours * HOUR_MS}
+        debug={timerDebugSlider}
+      />
     </SafeAreaView>
   );
 }
