@@ -1,9 +1,9 @@
 import {
+  BlurMask,
   Canvas,
   Circle,
   Line,
   Path,
-  Shadow,
   Skia,
   SweepGradient,
   vec,
@@ -13,12 +13,7 @@ import {
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import type { PaletteStop } from '@/src/core/constants/zones';
-import {
-  computeRingLayout,
-  samplePaletteAt,
-  slicePalette,
-  type LapSpan,
-} from '@/src/features/home/lib/ring';
+import { computeRingLayout, slicePalette, type LapSpan } from '@/src/features/home/lib/ring';
 
 export interface ProgressRingProps {
   size: number;
@@ -59,7 +54,8 @@ export function ProgressRing({
   const currentLapPath = useMemo(() => arcPath(rect, sweep), [rect, sweep]);
 
   const tip = pointOnRing(center, radius, sweep);
-  const tipColor = samplePaletteAt(layout.currentLap.endHour, palette);
+  // How far a rounded cap reaches past the arc's end, as a fraction of the circle.
+  const capSweep = Math.atan2(strokeWidth / 2, radius - strokeWidth / 2) / (2 * Math.PI);
 
   return (
     <View style={{ width: size, height: size }}>
@@ -80,7 +76,14 @@ export function ProgressRing({
             palette={palette}
             center={center}
             strokeWidth={strokeWidth}
+            capSweep={0}
           />
+        ) : null}
+        {active ? (
+          // Drawn under the current lap, so only the part ahead of the tip shows.
+          <Circle cx={tip.x} cy={tip.y} r={strokeWidth / 2} color="rgba(0, 0, 0, 0.35)">
+            <BlurMask blur={4} style="normal" />
+          </Circle>
         ) : null}
         {active ? (
           <LapArc
@@ -90,6 +93,7 @@ export function ProgressRing({
             palette={palette}
             center={center}
             strokeWidth={strokeWidth}
+            capSweep={capSweep}
           />
         ) : null}
         {active && layout.goalSweep !== null ? (
@@ -100,11 +104,6 @@ export function ProgressRing({
             strokeWidth={3}
             strokeCap="round"
           />
-        ) : null}
-        {active ? (
-          <Circle cx={tip.x} cy={tip.y} r={strokeWidth / 2} color={tipColor}>
-            <Shadow dx={0} dy={0} blur={4} color="rgba(0, 0, 0, 0.35)" />
-          </Circle>
         ) : null}
       </Canvas>
       {children ? (
@@ -132,22 +131,29 @@ interface LapArcProps {
   palette: readonly PaletteStop[];
   center: number;
   strokeWidth: number;
+  // Rounds both ends when above 0. The gradient starts this far before 12
+  // o'clock so the start cap keeps the first color instead of wrapping.
+  capSweep: number;
 }
 
-function LapArc({ path, span, sweep, palette, center, strokeWidth }: LapArcProps) {
+function LapArc({ path, span, sweep, palette, center, strokeWidth, capSweep }: LapArcProps) {
   const stops = useMemo(
     () => slicePalette(span.startHour, span.endHour, palette),
     [span.startHour, span.endHour, palette],
   );
   return (
-    <Path path={path} style="stroke" strokeWidth={strokeWidth} strokeCap="butt">
+    <Path
+      path={path}
+      style="stroke"
+      strokeWidth={strokeWidth}
+      strokeCap={capSweep > 0 ? 'round' : 'butt'}>
       <SweepGradient
         c={vec(center, center)}
         colors={stops.map((s) => s.color)}
-        positions={stops.map((s) => s.pos * sweep)}
+        positions={stops.map((s) => Math.min(1, capSweep + s.pos * sweep))}
         mode="clamp"
         origin={vec(center, center)}
-        transform={[{ rotate: (START_ANGLE * Math.PI) / 180 }]}
+        transform={[{ rotate: ((START_ANGLE - capSweep * 360) * Math.PI) / 180 }]}
       />
     </Path>
   );
