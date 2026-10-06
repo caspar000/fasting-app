@@ -1,41 +1,53 @@
 import { Text, View } from 'react-native';
-import { ZONES, type ZoneId } from '@/src/core/constants/zones';
+import {
+  getZoneEndHour,
+  TIMELINE_END_HOUR,
+  ZONES,
+  type Zone,
+} from '@/src/core/constants/zones';
+import { colors } from '@/src/core/theme/colors';
+import { useColorScheme } from '@/src/hooks/use-color-scheme';
 
 export interface ZoneBarProps {
-  activeZoneId?: ZoneId | null;
+  activeZone?: Zone | null;
 }
 
-const ZONE_COLORS: Record<ZoneId, string> = {
-  fed: '#3B82F6',
-  'fat-burn': '#2563EB',
-  ketosis: '#4F46E5',
-  'deep-ketosis': '#7C3AED',
-};
-
-export function ZoneBar({ activeZoneId }: ZoneBarProps) {
-  const dim = activeZoneId == null;
+export function ZoneBar({ activeZone }: ZoneBarProps) {
+  const scheme = useColorScheme();
+  const idle = activeZone == null;
   return (
-    <View
-      className="flex-row overflow-hidden rounded-xl"
-      style={{ height: 36 }}>
-      {ZONES.map((zone) => {
-        const color = ZONE_COLORS[zone.id];
-        const isActive = !dim && activeZoneId === zone.id;
-        const bg = dim ? '#D1D5DB' : color;
-        const opacity = dim ? 1 : isActive ? 1 : 0.85;
-        return (
-          <View
-            key={zone.id}
-            className="items-center justify-center"
-            style={{ flex: 1, backgroundColor: bg, opacity }}>
-            <Text
-              className="font-semibold text-[11px]"
-              style={{ color: dim ? '#4B5563' : '#FFFFFF' }}>
-              {zone.label}
-            </Text>
-          </View>
-        );
-      })}
+    <View style={{ gap: 8 }}>
+      <View className="flex-row items-center justify-between">
+        <Text className="font-semibold text-[13px] text-foreground">
+          {activeZone ? activeZone.label : 'Fasting zones'}
+        </Text>
+        <Text className="font-medium text-[12px] text-text-tertiary">
+          {activeZone ? zoneRangeLabel(activeZone) : `0–${TIMELINE_END_HOUR}h`}
+        </Text>
+      </View>
+      <View className="flex-row" style={{ gap: 2 }}>
+        {ZONES.map((zone) => {
+          const endHour = getZoneEndHour(zone) ?? TIMELINE_END_HOUR;
+          const isActive = activeZone?.id === zone.id;
+          return (
+            <View
+              key={zone.id}
+              className="rounded-full"
+              style={{
+                flex: endHour - zone.startHour,
+                height: 8,
+                backgroundColor: idle ? colors[scheme].border : zone.color[scheme],
+                opacity: idle || isActive ? 1 : 0.3,
+              }}
+            />
+          );
+        })}
+      </View>
     </View>
   );
+}
+
+function zoneRangeLabel(zone: Zone): string {
+  const endHour = getZoneEndHour(zone);
+  return endHour === null ? `${zone.startHour}h+` : `${zone.startHour}–${endHour}h`;
 }

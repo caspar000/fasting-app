@@ -23,10 +23,6 @@ export const colors = {
     destructive: '#EF4444',
     success: '#10B981',
     warning: '#F59E0B',
-    'zone-fed': '#60A5FA',
-    'zone-fat-burn': '#3B82F6',
-    'zone-ketosis': '#6366F1',
-    'zone-deep-ketosis': '#8B5CF6',
   },
   dark: {
     background: '#111827',
@@ -52,10 +48,6 @@ export const colors = {
     destructive: '#EF4444',
     success: '#10B981',
     warning: '#F59E0B',
-    'zone-fed': '#60A5FA',
-    'zone-fat-burn': '#3B82F6',
-    'zone-ketosis': '#6366F1',
-    'zone-deep-ketosis': '#8B5CF6',
   },
 } as const;
 

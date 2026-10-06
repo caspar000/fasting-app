@@ -8,14 +8,10 @@ import {
 } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import { View } from 'react-native';
+import type { PaletteStop } from '@/src/core/constants/zones';
 
 interface GradientStop {
   pos: number;
-  color: string;
-}
-
-export interface PaletteStop {
-  hour: number;
   color: string;
 }
 
@@ -277,13 +273,3 @@ function hexToRgb(hex: string): [number, number, number] {
 function toHex(n: number): string {
   return n.toString(16).padStart(2, '0');
 }
-
-export const HOURS_PALETTE: HoursPalette = [
-  { hour: 0, color: '#60A5FA' },
-  { hour: 4, color: '#3B82F6' },
-  { hour: 12, color: '#6366F1' },
-  { hour: 18, color: '#8B5CF6' },
-  { hour: 24, color: '#7C3AED' },
-  { hour: 36, color: '#5B21B6' },
-  { hour: 48, color: '#1E1B4B' },
-];

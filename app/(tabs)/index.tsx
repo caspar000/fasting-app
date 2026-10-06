@@ -3,14 +3,14 @@ import { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getProtocol } from '@/src/core/constants/protocols';
-import { getZoneForElapsed } from '@/src/core/constants/zones';
+import { getZoneForElapsed, zonePalette } from '@/src/core/constants/zones';
 import { computeStreaks } from '@/src/core/lib/streaks';
 import { formatDurationHoursMinutes, formatElapsed, formatTimeOfDay, relativeDayLabel } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
 import { ActionButton } from '@/src/features/home/components/action-button';
 import { AdjustStartModal } from '@/src/features/home/components/adjust-start-modal';
 import { DebugTimerSlider } from '@/src/features/home/components/debug-timer-slider';
-import { HOURS_PALETTE, ProgressRing } from '@/src/features/home/components/progress-ring';
+import { ProgressRing } from '@/src/features/home/components/progress-ring';
 import { ActiveTimerContent, IdleTimerContent } from '@/src/features/home/components/timer-display';
 import { TimeInfo } from '@/src/features/home/components/time-info';
 import { ZoneBar } from '@/src/features/home/components/zone-bar';
@@ -53,6 +53,7 @@ export default function DashboardScreen() {
   const showActiveTimer = Boolean(activeFast) || timerDebugSlider;
   const elapsedHours = displayedElapsedMs / HOUR_MS;
   const currentZone = useMemo(() => getZoneForElapsed(elapsedHours), [elapsedHours]);
+  const palette = useMemo(() => zonePalette(scheme), [scheme]);
 
   const goalDate = activeFast
     ? new Date(activeFast.startedAt + activeProtocol.fastHours * HOUR_MS)
@@ -74,7 +75,7 @@ export default function DashboardScreen() {
             strokeWidth={RING_STROKE}
             elapsedHours={showActiveTimer ? elapsedHours : 0}
             protocolHours={activeProtocol.fastHours}
-            palette={HOURS_PALETTE}
+            palette={palette}
             trackColor={theme.border}>
             {showActiveTimer ? (
               <ActiveTimerContent
@@ -116,7 +117,7 @@ export default function DashboardScreen() {
             ) : (
               <TimeInfo startLabel="Last fast" startValue="—" endLabel="Duration" endValue="—" />
             )}
-            <ZoneBar activeZoneId={showActiveTimer ? currentZone.id : null} />
+            <ZoneBar activeZone={showActiveTimer ? currentZone : null} />
             {timerDebugSlider ? (
               <DebugTimerSlider
                 value={debugElapsedMs}

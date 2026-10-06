@@ -24,10 +24,6 @@ module.exports = {
         destructive: 'rgb(var(--color-destructive) / <alpha-value>)',
         success: 'rgb(var(--color-success) / <alpha-value>)',
         warning: 'rgb(var(--color-warning) / <alpha-value>)',
-        'zone-fed': 'rgb(var(--color-zone-fed) / <alpha-value>)',
-        'zone-fat-burn': 'rgb(var(--color-zone-fat-burn) / <alpha-value>)',
-        'zone-ketosis': 'rgb(var(--color-zone-ketosis) / <alpha-value>)',
-        'zone-deep-ketosis': 'rgb(var(--color-zone-deep-ketosis) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter_400Regular'],

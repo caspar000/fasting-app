@@ -22,10 +22,6 @@
     --color-destructive: 239 68 68;
     --color-success: 16 185 129;
     --color-warning: 245 158 11;
-    --color-zone-fed: 96 165 250;
-    --color-zone-fat-burn: 59 130 246;
-    --color-zone-ketosis: 99 102 241;
-    --color-zone-deep-ketosis: 139 92 246;
   }
 
   .dark:root,
