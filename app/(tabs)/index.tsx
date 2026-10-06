@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getProtocol } from '@/src/core/constants/protocols';
-import { getZoneForElapsed, zonePalette } from '@/src/core/constants/zones';
+import { getZoneForElapsed, TIMELINE_END_HOUR, zonePalette } from '@/src/core/constants/zones';
 import { computeStreaks } from '@/src/core/lib/streaks';
 import { formatDurationHoursMinutes, formatElapsed, formatTimeOfDay, relativeDayLabel } from '@/src/core/lib/time';
 import { colors } from '@/src/core/theme/colors';
@@ -60,8 +60,6 @@ export default function DashboardScreen() {
     : null;
   const startedDate = activeFast ? new Date(activeFast.startedAt) : null;
 
-  const sliderMaxMs = Math.max(activeProtocol.fastHours, 20) * HOUR_MS;
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <ScrollView
@@ -74,9 +72,10 @@ export default function DashboardScreen() {
             size={RING_SIZE}
             strokeWidth={RING_STROKE}
             elapsedHours={showActiveTimer ? elapsedHours : 0}
-            protocolHours={activeProtocol.fastHours}
+            goalHours={activeProtocol.fastHours}
             palette={palette}
-            trackColor={theme.border}>
+            trackColor={theme.border}
+            goalTickColor={theme.foreground}>
             {showActiveTimer ? (
               <ActiveTimerContent
                 elapsedText={formatElapsed(displayedElapsedMs)}
@@ -121,7 +120,7 @@ export default function DashboardScreen() {
             {timerDebugSlider ? (
               <DebugTimerSlider
                 value={debugElapsedMs}
-                maxMs={sliderMaxMs}
+                maxMs={TIMELINE_END_HOUR * HOUR_MS}
                 onChange={setDebugElapsedMs}
               />
             ) : null}

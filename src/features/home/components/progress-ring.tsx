@@ -1,194 +1,110 @@
 import {
   Canvas,
   Circle,
+  Line,
   Path,
+  Shadow,
   Skia,
   SweepGradient,
   vec,
+  type SkPath,
+  type SkRect,
 } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import type { PaletteStop } from '@/src/core/constants/zones';
-
-interface GradientStop {
-  pos: number;
-  color: string;
-}
-
-export type HoursPalette = readonly PaletteStop[];
+import {
+  computeRingLayout,
+  samplePaletteAt,
+  slicePalette,
+  type LapSpan,
+} from '@/src/features/home/lib/ring';
 
 export interface ProgressRingProps {
   size: number;
   strokeWidth: number;
   elapsedHours: number;
-  protocolHours: number;
-  palette: HoursPalette;
+  goalHours: number;
+  palette: readonly PaletteStop[];
   trackColor: string;
-  maxLaps?: number;
+  goalTickColor: string;
   children?: React.ReactNode;
 }
 
 const START_ANGLE = -90;
-const MIN_VISUAL_PROGRESS = 0.015;
-const DEFAULT_MAX_LAPS = 3;
+const MIN_VISUAL_SWEEP = 0.015;
 
 export function ProgressRing({
   size,
   strokeWidth,
   elapsedHours,
-  protocolHours,
+  goalHours,
   palette,
   trackColor,
-  maxLaps = DEFAULT_MAX_LAPS,
+  goalTickColor,
   children,
 }: ProgressRingProps) {
   const radius = (size - strokeWidth) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const gradientRotation = (START_ANGLE * Math.PI) / 180;
+  const center = size / 2;
 
-  const safeElapsed = Math.max(0, elapsedHours);
-  const safeProtocol = Math.max(0.001, protocolHours);
-  const rawProgress = safeElapsed / safeProtocol;
-  const cappedProgress = Math.min(rawProgress, maxLaps);
-  const atCap = cappedProgress >= maxLaps;
-  const laps = Math.floor(cappedProgress);
-  const lapProgress = cappedProgress - laps;
-
-  let currentLapStart: number;
-  let currentLapEnd: number;
-  let currentLapSweep: number;
-  let hasPrevious: boolean;
-  let previousLapStart: number;
-  let previousLapEnd: number;
-
-  if (atCap) {
-    currentLapStart = (maxLaps - 1) * safeProtocol;
-    currentLapEnd = maxLaps * safeProtocol;
-    currentLapSweep = 1;
-    hasPrevious = maxLaps >= 2;
-    previousLapStart = Math.max(0, (maxLaps - 2) * safeProtocol);
-    previousLapEnd = (maxLaps - 1) * safeProtocol;
-  } else {
-    currentLapStart = laps * safeProtocol;
-    currentLapEnd = safeElapsed;
-    currentLapSweep = lapProgress;
-    hasPrevious = laps >= 1;
-    previousLapStart = Math.max(0, (laps - 1) * safeProtocol);
-    previousLapEnd = laps * safeProtocol;
-  }
-
-  const visualCurrentSweep =
-    cappedProgress > 0 ? Math.max(currentLapSweep, MIN_VISUAL_PROGRESS) : 0;
-
-  const paddedEndHour =
-    visualCurrentSweep > currentLapSweep
-      ? currentLapStart + visualCurrentSweep * safeProtocol
-      : currentLapEnd;
+  const layout = computeRingLayout(elapsedHours, goalHours);
+  const active = elapsedHours > 0;
+  const sweep = active ? Math.max(layout.currentSweep, MIN_VISUAL_SWEEP) : 0;
 
   const rect = useMemo(
-    () =>
-      Skia.XYWHRect(
-        strokeWidth / 2,
-        strokeWidth / 2,
-        size - strokeWidth,
-        size - strokeWidth,
-      ),
+    () => Skia.XYWHRect(strokeWidth / 2, strokeWidth / 2, size - strokeWidth, size - strokeWidth),
     [size, strokeWidth],
   );
+  const fullLapPath = useMemo(() => arcPath(rect, 1), [rect]);
+  const currentLapPath = useMemo(() => arcPath(rect, sweep), [rect, sweep]);
 
-  const fullLapPath = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addArc(rect, START_ANGLE, 360);
-    return p;
-  }, [rect]);
-
-  const currentLapPath = useMemo(() => {
-    const p = Skia.Path.Make();
-    if (visualCurrentSweep > 0) {
-      p.addArc(rect, START_ANGLE, visualCurrentSweep * 360);
-    }
-    return p;
-  }, [rect, visualCurrentSweep]);
-
-  const currentStops = useMemo(
-    () => slicePalette(currentLapStart, paddedEndHour, palette),
-    [currentLapStart, paddedEndHour, palette],
-  );
-  const currentColors = useMemo(() => currentStops.map((s) => s.color), [currentStops]);
-  const currentPositions = useMemo(
-    () => currentStops.map((s) => s.pos * visualCurrentSweep),
-    [currentStops, visualCurrentSweep],
-  );
-
-  const previousStops = useMemo(
-    () => (hasPrevious ? slicePalette(previousLapStart, previousLapEnd, palette) : null),
-    [hasPrevious, previousLapStart, previousLapEnd, palette],
-  );
-  const previousColors = useMemo(
-    () => previousStops?.map((s) => s.color) ?? [],
-    [previousStops],
-  );
-  const previousPositions = useMemo(
-    () => previousStops?.map((s) => s.pos) ?? [],
-    [previousStops],
-  );
-
-  const leadingAngleRad = ((START_ANGLE + visualCurrentSweep * 360) * Math.PI) / 180;
-  const leadingX = cx + radius * Math.cos(leadingAngleRad);
-  const leadingY = cy + radius * Math.sin(leadingAngleRad);
-  const leadingColor = useMemo(
-    () => samplePaletteAt(paddedEndHour, palette),
-    [paddedEndHour, palette],
-  );
-
-  const showLeadingBall = !atCap && visualCurrentSweep > 0;
+  const tip = pointOnRing(center, radius, sweep);
+  const tipColor = samplePaletteAt(layout.currentLap.endHour, palette);
 
   return (
     <View style={{ width: size, height: size }}>
       <Canvas style={{ width: size, height: size }}>
         <Circle
-          cx={cx}
-          cy={cy}
+          cx={center}
+          cy={center}
           r={radius}
           style="stroke"
           strokeWidth={strokeWidth}
           color={trackColor}
         />
-        {previousStops ? (
-          <Path
+        {active && layout.previousLap ? (
+          <LapArc
             path={fullLapPath}
-            style="stroke"
+            span={layout.previousLap}
+            sweep={1}
+            palette={palette}
+            center={center}
             strokeWidth={strokeWidth}
-            strokeCap="butt">
-            <SweepGradient
-              c={vec(cx, cy)}
-              colors={previousColors}
-              positions={previousPositions}
-              mode="clamp"
-              origin={vec(cx, cy)}
-              transform={[{ rotate: gradientRotation }]}
-            />
-          </Path>
+          />
         ) : null}
-        {visualCurrentSweep > 0 ? (
-          <Path
+        {active ? (
+          <LapArc
             path={currentLapPath}
-            style="stroke"
+            span={layout.currentLap}
+            sweep={sweep}
+            palette={palette}
+            center={center}
             strokeWidth={strokeWidth}
-            strokeCap="butt">
-            <SweepGradient
-              c={vec(cx, cy)}
-              colors={currentColors}
-              positions={currentPositions}
-              mode="clamp"
-              origin={vec(cx, cy)}
-              transform={[{ rotate: gradientRotation }]}
-            />
-          </Path>
+          />
         ) : null}
-        {showLeadingBall ? (
-          <Circle cx={leadingX} cy={leadingY} r={strokeWidth / 2} color={leadingColor} />
+        {active && layout.goalSweep !== null ? (
+          <Line
+            p1={pointOnRing(center, radius - strokeWidth / 2 - 3, layout.goalSweep)}
+            p2={pointOnRing(center, radius + strokeWidth / 2 + 3, layout.goalSweep)}
+            color={goalTickColor}
+            strokeWidth={3}
+            strokeCap="round"
+          />
+        ) : null}
+        {active ? (
+          <Circle cx={tip.x} cy={tip.y} r={strokeWidth / 2} color={tipColor}>
+            <Shadow dx={0} dy={0} blur={4} color="rgba(0, 0, 0, 0.35)" />
+          </Circle>
         ) : null}
       </Canvas>
       {children ? (
@@ -209,67 +125,41 @@ export function ProgressRing({
   );
 }
 
-function samplePaletteAt(hour: number, palette: HoursPalette): string {
-  const first = palette[0];
-  const last = palette[palette.length - 1];
-  if (!first || !last) return '#000000';
-  if (hour <= first.hour) return first.color;
-  if (hour >= last.hour) return last.color;
-  for (let i = 0; i < palette.length - 1; i++) {
-    const a = palette[i]!;
-    const b = palette[i + 1]!;
-    if (hour >= a.hour && hour <= b.hour) {
-      const span = b.hour - a.hour;
-      const t = span === 0 ? 0 : (hour - a.hour) / span;
-      return lerpHex(a.color, b.color, t);
-    }
-  }
-  return last.color;
+interface LapArcProps {
+  path: SkPath;
+  span: LapSpan;
+  sweep: number;
+  palette: readonly PaletteStop[];
+  center: number;
+  strokeWidth: number;
 }
 
-function slicePalette(
-  startHour: number,
-  endHour: number,
-  palette: HoursPalette,
-): GradientStop[] {
-  if (endHour <= startHour) {
-    return [{ pos: 0, color: samplePaletteAt(startHour, palette) }];
-  }
-  const startColor = samplePaletteAt(startHour, palette);
-  const endColor = samplePaletteAt(endHour, palette);
-  const span = endHour - startHour;
-  const stops: GradientStop[] = [{ pos: 0, color: startColor }];
-  for (const p of palette) {
-    if (p.hour > startHour && p.hour < endHour) {
-      stops.push({ pos: (p.hour - startHour) / span, color: p.color });
-    }
-  }
-  stops.push({ pos: 1, color: endColor });
-  return stops;
+function LapArc({ path, span, sweep, palette, center, strokeWidth }: LapArcProps) {
+  const stops = useMemo(
+    () => slicePalette(span.startHour, span.endHour, palette),
+    [span.startHour, span.endHour, palette],
+  );
+  return (
+    <Path path={path} style="stroke" strokeWidth={strokeWidth} strokeCap="butt">
+      <SweepGradient
+        c={vec(center, center)}
+        colors={stops.map((s) => s.color)}
+        positions={stops.map((s) => s.pos * sweep)}
+        mode="clamp"
+        origin={vec(center, center)}
+        transform={[{ rotate: (START_ANGLE * Math.PI) / 180 }]}
+      />
+    </Path>
+  );
 }
 
-function lerpHex(a: string, b: string, k: number): string {
-  const rgbA = hexToRgb(a);
-  const rgbB = hexToRgb(b);
-  const r = Math.round(rgbA[0] + (rgbB[0] - rgbA[0]) * k);
-  const g = Math.round(rgbA[1] + (rgbB[1] - rgbA[1]) * k);
-  const bl = Math.round(rgbA[2] + (rgbB[2] - rgbA[2]) * k);
-  return `#${toHex(r)}${toHex(g)}${toHex(bl)}`;
+function arcPath(rect: SkRect, sweep: number): SkPath {
+  const p = Skia.Path.Make();
+  if (sweep > 0) p.addArc(rect, START_ANGLE, sweep * 360);
+  return p;
 }
 
-function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.replace('#', '');
-  const full =
-    h.length === 3
-      ? h
-          .split('')
-          .map((c) => c + c)
-          .join('')
-      : h;
-  const num = parseInt(full, 16);
-  return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
-}
-
-function toHex(n: number): string {
-  return n.toString(16).padStart(2, '0');
+function pointOnRing(center: number, radius: number, sweep: number) {
+  const angle = ((START_ANGLE + sweep * 360) * Math.PI) / 180;
+  return vec(center + radius * Math.cos(angle), center + radius * Math.sin(angle));
 }
