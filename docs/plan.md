@@ -46,7 +46,7 @@ First build (1.0.0, build 2, commit `f7c09f4`) is on TestFlight. EAS holds the s
 
 ## Shipping changes
 
-- **JS-only changes** (screens, logic, styles): `eas update --channel production --message "..."`. The TestFlight build downloads the update on launch and applies it on the next launch.
+- **JS-only changes** (screens, logic, styles): `eas update --channel production --environment production --message "..."`. The TestFlight build downloads the update on launch and applies it on the next launch.
 - **Native changes** (adding or upgrading a package with native code, `app.json` changes such as the icon or plugins, or a new `version`): `eas build -p ios --profile production --auto-submit`. The build number goes up automatically.
 - Updates only reach builds with the same runtime version. The runtime follows `version` in `app.json`, so bumping it requires a new build.
 
